@@ -13,6 +13,11 @@ const routes: Routes = [
       const modulo = await import('./home/home.module');
       return modulo.HomeModule;
     }
+  },
+  {
+    path: 'skins',
+    loadChildren: () =>
+      import('./skins/skins.module').then((m) => m.SkinsModule)
   }
 ];
 

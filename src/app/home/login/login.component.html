@@ -1,13 +1,22 @@
-<h4 class="text-center">Login<h4>
+<h4 class="text-center">Login</h4>
 
-  <form class="form mt-4">
-    <div class="form-group">
-      <input class="form-control" placeholder="User name">
-    </div>
+<form class="form mt-4" (ngSubmit)="login()" #loginForm="ngForm">
+  <div class="form-group">
+    <input class="form-control" placeholder="User name" [(ngModel)]="user" name="user" #userField="ngModel"
+      required>
+    <!--- #userField is a template variable used to authenticate the input --->
+    <app-message *ngIf="userField.invalid && userField.touched" message="Required user"></app-message>
+  </div>
 
-    <div class="form-group">
-      <input type="password" class="form-control" placeholder="Password">
-    </div>
+  <div class="form-group">
+    <input type="password" class="form-control" placeholder="Password" [(ngModel)]="password" name="password"
+      #passwordField="ngModel" required />
+    <app-message *ngIf="passwordField.invalid && passwordField.touched" message="Required password"></app-message>
+  </div>
 
-    <button type="submit" class="btn btn-primary btn-block">Login</button>
-  </form>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid">
+    Login
+  </button>
+</form>
+
+<p>Not registred yet?<a [routerLink]="['signup']"> Sign up!</a></p>
