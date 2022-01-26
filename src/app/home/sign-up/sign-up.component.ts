@@ -1,7 +1,11 @@
+import { UserExistsService } from './user-exists.service';
 import { SignUpService } from './sign-up.service';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SignUp } from './sign-up';
+import { lowerCaseValidator } from './lowerCase.validator';
+import { userNameEqualPasswordValidator } from './userNameEqualsPassword.validator';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,20 +17,39 @@ export class SignUpComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private signUpService: SignUpService
+    private signUpService: SignUpService,
+    private userExistsService:UserExistsService,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
-      email:[''],
-      fullName:[''],
-      userName:[''],
+      // this scope validates the form fields
+      email:['', [Validators.required, Validators.email]],
+      fullName:['', [Validators.required, Validators.minLength(5)]],
+      userName:['', [lowerCaseValidator], [this.userExistsService.userAlreadyExists()]],
       password:[''],
-    })
+    },
+    {
+      // this scope validates the whole form
+      validators: [ userNameEqualPasswordValidator ]
+    }
+    )
   }
   signUp(){
-    const signUp = this.signUpForm.getRawValue() as SignUp;
-    console.log(signUp);
+    if(this.signUpForm.valid)
+    {
+      const signUp = this.signUpForm.getRawValue() as SignUp;
+      this.signUpService.signUpNewUser(signUp).subscribe(
+        () => {
+          this.router.navigate(['']);
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+
+    }
   }
 
 }
